@@ -1,3 +1,54 @@
+/**
+ * Quita acentos y diacríticos y pasa a minúsculas, para que las búsquedas
+ * por nombre ignoren tildes (p. ej. «maria» encuentra «María»).
+ */
+export function normalizarTexto(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+/** Fecha local en formato ISO (YYYY-MM-DD). */
+export function fechaLocalISO(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+/** Etiqueta corta de una fecha («Hoy», «Mañana» o «14 ago»). */
+export function formatearFechaCita(fechaISO: string): string {
+  const hoy = new Date();
+  const manana = new Date(hoy);
+  manana.setDate(hoy.getDate() + 1);
+  if (fechaISO === fechaLocalISO(hoy)) return "Hoy";
+  if (fechaISO === fechaLocalISO(manana)) return "Mañana";
+  return new Date(`${fechaISO}T00:00:00`).toLocaleDateString("es-MX", {
+    day: "numeric",
+    month: "short",
+  });
+}
+
+/**
+ * True si la cita ya pasó (su fecha es anterior al día de hoy).
+ * Las citas de hoy o futuras se consideran modificables.
+ */
+export function esCitaPasada(fechaISO: string): boolean {
+  return fechaISO < fechaLocalISO(new Date());
+}
+
+export const TIPOS_CITA = [
+  "Limpieza dental",
+  "Consulta general",
+  "Consulta de ortodoncia",
+  "Endodoncia (conducto)",
+  "Blanqueamiento dental",
+  "Extracción de muela",
+  "Revisión general",
+  "Tratamiento periodontal",
+];
+
+export const DURACIONES_CITA = [30, 45, 60, 90, 120];
+
 export type EstadoPaciente = "activo" | "pendiente" | "inactivo";
 export type EstadoCita = "pendiente" | "completada" | "cancelada";
 export type EstadoFactura = "pagada" | "pendiente" | "vencida";
@@ -21,11 +72,27 @@ export type Cita = {
   paciente: string;
   doctor: string;
   fecha: string;
+  /** Fecha en formato ISO (YYYY-MM-DD) para el calendario. */
+  fechaISO: string;
   hora: string;
   tipo: string;
   duracion: string;
   estado: EstadoCita;
 };
+
+function toISODate(d: Date): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+const HOY = new Date();
+const MANANA = new Date(HOY);
+MANANA.setDate(MANANA.getDate() + 1);
+
+const hoyISO = toISODate(HOY);
+const mananaISO = toISODate(MANANA);
 
 export type Factura = {
   id: string;
@@ -75,18 +142,18 @@ export const pacientes: Paciente[] = [
 ];
 
 export const citas: Cita[] = [
-  { id: "C-101", paciente: "María Fernanda López", doctor: "Dra. Elena Vargas", fecha: "Hoy", hora: "10:30", tipo: "Limpieza dental", duracion: "45 min", estado: "pendiente" },
-  { id: "C-102", paciente: "Carlos Andrés Ramírez", doctor: "Dr. Ricardo Peña", fecha: "Hoy", hora: "12:00", tipo: "Consulta de ortodoncia", duracion: "30 min", estado: "pendiente" },
-  { id: "C-103", paciente: "Ana Sofía Torres", doctor: "Dra. Lucía Fernández", fecha: "Hoy", hora: "15:00", tipo: "Endodoncia (conducto)", duracion: "90 min", estado: "pendiente" },
-  { id: "C-104", paciente: "Valentina Gómez", doctor: "Dra. Elena Vargas", fecha: "Mañana", hora: "09:00", tipo: "Blanqueamiento dental", duracion: "60 min", estado: "pendiente" },
-  { id: "C-105", paciente: "Camila Rodríguez", doctor: "Dr. Marco Salazar", fecha: "Mañana", hora: "11:30", tipo: "Extracción de muela", duracion: "45 min", estado: "pendiente" },
-  { id: "C-106", paciente: "Jorge Luis Mendoza", doctor: "Dr. Andrés Molina", fecha: "14 ago", hora: "16:30", tipo: "Consulta de implantes", duracion: "40 min", estado: "pendiente" },
-  { id: "C-107", paciente: "Daniela Cruz", doctor: "Dra. Paola Ríos", fecha: "15 ago", hora: "09:30", tipo: "Tratamiento periodontal", duracion: "50 min", estado: "pendiente" },
-  { id: "C-108", paciente: "Pedro Sánchez", doctor: "Dra. Elena Vargas", fecha: "15 ago", hora: "12:00", tipo: "Revisión general", duracion: "30 min", estado: "pendiente" },
-  { id: "C-109", paciente: "Luis Miguel Herrera", doctor: "Dr. Ricardo Peña", fecha: "10 ago", hora: "10:00", tipo: "Ajuste de brackets", duracion: "30 min", estado: "completada" },
-  { id: "C-110", paciente: "Roberto Díaz", doctor: "Dr. Marco Salazar", fecha: "08 ago", hora: "13:30", tipo: "Cirugía de terceros molares", duracion: "120 min", estado: "completada" },
-  { id: "C-111", paciente: "María Fernanda López", doctor: "Dra. Elena Vargas", fecha: "07 ago", hora: "09:00", tipo: "Resina estética", duracion: "60 min", estado: "completada" },
-  { id: "C-112", paciente: "Valentina Gómez", doctor: "Dra. Paola Ríos", fecha: "06 ago", hora: "17:00", tipo: "Limpieza dental", duracion: "45 min", estado: "cancelada" },
+  { id: "C-101", paciente: "María Fernanda López", doctor: "Dra. Elena Vargas", fecha: "Hoy", fechaISO: hoyISO, hora: "10:30", tipo: "Limpieza dental", duracion: "45 min", estado: "pendiente" },
+  { id: "C-102", paciente: "Carlos Andrés Ramírez", doctor: "Dr. Ricardo Peña", fecha: "Hoy", fechaISO: hoyISO, hora: "12:00", tipo: "Consulta de ortodoncia", duracion: "30 min", estado: "pendiente" },
+  { id: "C-103", paciente: "Ana Sofía Torres", doctor: "Dra. Lucía Fernández", fecha: "Hoy", fechaISO: hoyISO, hora: "15:00", tipo: "Endodoncia (conducto)", duracion: "90 min", estado: "pendiente" },
+  { id: "C-104", paciente: "Valentina Gómez", doctor: "Dra. Elena Vargas", fecha: "Mañana", fechaISO: mananaISO, hora: "09:00", tipo: "Blanqueamiento dental", duracion: "60 min", estado: "pendiente" },
+  { id: "C-105", paciente: "Camila Rodríguez", doctor: "Dr. Marco Salazar", fecha: "Mañana", fechaISO: mananaISO, hora: "11:30", tipo: "Extracción de muela", duracion: "45 min", estado: "pendiente" },
+  { id: "C-106", paciente: "Jorge Luis Mendoza", doctor: "Dr. Andrés Molina", fecha: "14 ago", fechaISO: "2026-08-14", hora: "16:30", tipo: "Consulta de implantes", duracion: "40 min", estado: "pendiente" },
+  { id: "C-107", paciente: "Daniela Cruz", doctor: "Dra. Paola Ríos", fecha: "15 ago", fechaISO: "2026-08-15", hora: "09:30", tipo: "Tratamiento periodontal", duracion: "50 min", estado: "pendiente" },
+  { id: "C-108", paciente: "Pedro Sánchez", doctor: "Dra. Elena Vargas", fecha: "15 ago", fechaISO: "2026-08-15", hora: "12:00", tipo: "Revisión general", duracion: "30 min", estado: "pendiente" },
+  { id: "C-109", paciente: "Luis Miguel Herrera", doctor: "Dr. Ricardo Peña", fecha: "10 ago", fechaISO: "2026-08-10", hora: "10:00", tipo: "Ajuste de brackets", duracion: "30 min", estado: "completada" },
+  { id: "C-110", paciente: "Roberto Díaz", doctor: "Dr. Marco Salazar", fecha: "08 ago", fechaISO: "2026-08-08", hora: "13:30", tipo: "Cirugía de terceros molares", duracion: "120 min", estado: "completada" },
+  { id: "C-111", paciente: "María Fernanda López", doctor: "Dra. Elena Vargas", fecha: "07 ago", fechaISO: "2026-08-07", hora: "09:00", tipo: "Resina estética", duracion: "60 min", estado: "completada" },
+  { id: "C-112", paciente: "Valentina Gómez", doctor: "Dra. Paola Ríos", fecha: "06 ago", fechaISO: "2026-08-06", hora: "17:00", tipo: "Limpieza dental", duracion: "45 min", estado: "cancelada" },
 ];
 
 export const facturas: Factura[] = [

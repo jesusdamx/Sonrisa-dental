@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Search, UserPlus } from "lucide-react";
-import { pacientes, type EstadoPaciente } from "@/lib/data";
+import { normalizarTexto, pacientes, type EstadoPaciente } from "@/lib/data";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge, type BadgeVariant } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,12 +17,12 @@ export default function PacientesPage() {
   const [query, setQuery] = useState("");
 
   const filtrados = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = normalizarTexto(query);
     if (!q) return pacientes;
     return pacientes.filter(
       (p) =>
-        p.nombre.toLowerCase().includes(q) ||
-        p.email.toLowerCase().includes(q) ||
+        normalizarTexto(p.nombre).includes(q) ||
+        normalizarTexto(p.email).includes(q) ||
         p.telefono.includes(q)
     );
   }, [query]);

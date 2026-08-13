@@ -4,6 +4,11 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Shell from "@/components/dashboard/shell";
 import "./globals.css";
 
+// CSS global de FullCalendar (v7). Debe importarse desde el layout raíz.
+import "@fullcalendar/react/skeleton.css";
+import "@fullcalendar/react/themes/classic/theme.css";
+import "@fullcalendar/react/themes/classic/palette.css";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
