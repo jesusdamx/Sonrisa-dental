@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CalendarClock, X } from "lucide-react";
+import { AlertTriangle, CalendarClock, Trash2, X } from "lucide-react";
 import {
   DURACIONES_CITA,
   TIPOS_CITA,
@@ -24,10 +24,12 @@ export default function ModalEditarCita({
   cita,
   onGuardar,
   onCerrar,
+  onEliminar,
 }: {
   cita: Cita;
   onGuardar: (cita: Cita) => void;
   onCerrar: () => void;
+  onEliminar?: (id: string) => void;
 }) {
   const [fecha, setFecha] = useState(cita.fechaISO);
   const [hora, setHora] = useState(cita.hora);
@@ -38,6 +40,7 @@ export default function ModalEditarCita({
   });
   const [estado, setEstado] = useState<EstadoCita>(cita.estado);
   const [error, setError] = useState("");
+  const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
 
   useEffect(() => {
     function onKey(e: globalThis.KeyboardEvent) {
@@ -61,6 +64,11 @@ export default function ModalEditarCita({
       duracion: `${duracion} min`,
       estado,
     });
+  }
+
+  function handleEliminar() {
+    onEliminar?.(cita.id);
+    onCerrar();
   }
 
   return (
@@ -181,22 +189,96 @@ export default function ModalEditarCita({
             ) : null}
           </div>
 
-          <div className="flex justify-end gap-2 border-t border-slate-100 bg-slate-50/60 px-6 py-4">
-            <button
-              type="button"
-              onClick={onCerrar}
-              className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="inline-flex items-center gap-2 rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-teal-600/30 transition-colors hover:bg-teal-700"
-            >
-              Guardar cambios
-            </button>
+          <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/60 px-6 py-4">
+            {onEliminar ? (
+              <button
+                type="button"
+                onClick={() => setMostrarConfirmacion(true)}
+                className="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50/60 px-3 py-2 text-sm font-medium text-rose-600 transition-colors hover:bg-rose-100"
+              >
+                <Trash2 className="h-4 w-4" />
+                Eliminar
+              </button>
+            ) : (
+              <div />
+            )}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={onCerrar}
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="inline-flex items-center gap-2 rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-teal-600/30 transition-colors hover:bg-teal-700"
+              >
+                Guardar cambios
+              </button>
+            </div>
           </div>
         </form>
+
+        {mostrarConfirmacion && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4"
+            onClick={() => setMostrarConfirmacion(false)}
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="modal-confirmar-titulo"
+          >
+            <div
+              className="w-full max-w-sm overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-50">
+                    <AlertTriangle className="h-5 w-5 text-rose-600" />
+                  </span>
+                  <h3 className="text-base font-semibold text-slate-900">
+                    Eliminar cita
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMostrarConfirmacion(false)}
+                  aria-label="Cerrar"
+                  className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="px-6 py-5">
+                <p className="text-sm text-slate-600">
+                  ¿Estás seguro de que deseas eliminar esta cita de{" "}
+                  <span className="font-medium">{cita.paciente}</span> con el{" "}
+                  <span className="font-medium">{cita.doctor}</span>? Esta acción no se puede deshacer.
+                </p>
+              </div>
+
+              <div className="flex justify-end gap-2 border-t border-slate-100 bg-slate-50/60 px-6 py-4">
+                <button
+                  type="button"
+                  onClick={() => setMostrarConfirmacion(false)}
+                  className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleEliminar}
+                  className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-rose-600/30 transition-colors hover:bg-rose-700"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

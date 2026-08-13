@@ -41,6 +41,8 @@ export default function CitasPage() {
   const [listaCitas, setListaCitas] = useState<Cita[]>(citasIniciales);
   const [modalAbierta, setModalAbierta] = useState(false);
   const [citaEnEdicion, setCitaEnEdicion] = useState<Cita | null>(null);
+  const [fechaModalNueva, setFechaModalNueva] = useState<string | undefined>();
+  const [horaModalNueva, setHoraModalNueva] = useState<string | undefined>();
 
   const visibles =
     filtro === "todas"
@@ -67,6 +69,22 @@ export default function CitasPage() {
           : c
       )
     );
+  }
+
+  function eliminarCita(id: string) {
+    setListaCitas((prev) => prev.filter((c) => c.id !== id));
+  }
+
+  function abrirModalNueva(fechaISO: string, hora: string) {
+    setFechaModalNueva(fechaISO);
+    setHoraModalNueva(hora);
+    setModalAbierta(true);
+  }
+
+  function cerrarModalNueva() {
+    setModalAbierta(false);
+    setFechaModalNueva(undefined);
+    setHoraModalNueva(undefined);
   }
 
   return (
@@ -128,6 +146,7 @@ export default function CitasPage() {
             citas={visibles}
             onEditarCita={setCitaEnEdicion}
             onMoverCita={moverCita}
+            onNuevaCita={abrirModalNueva}
           />
         </Card>
       ) : (
@@ -214,20 +233,23 @@ export default function CitasPage() {
         </Card>
       )}
 
-      {modalAbierta ? (
+      {modalAbierta && (
         <ModalNuevaCita
           onGuardar={agregarCita}
-          onCerrar={() => setModalAbierta(false)}
+          onCerrar={cerrarModalNueva}
+          fechaInicial={fechaModalNueva}
+          horaInicial={horaModalNueva}
         />
-      ) : null}
+      )}
 
-      {citaEnEdicion ? (
+      {citaEnEdicion && (
         <ModalEditarCita
           cita={citaEnEdicion}
           onGuardar={actualizarCita}
           onCerrar={() => setCitaEnEdicion(null)}
+          onEliminar={eliminarCita}
         />
-      ) : null}
+      )}
     </div>
   );
 }

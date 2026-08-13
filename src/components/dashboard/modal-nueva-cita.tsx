@@ -33,17 +33,21 @@ function doctorAleatorio(): string {
 export default function ModalNuevaCita({
   onGuardar,
   onCerrar,
+  fechaInicial,
+  horaInicial,
 }: {
   onGuardar: (cita: Cita) => void;
   onCerrar: () => void;
+  fechaInicial?: string;
+  horaInicial?: string;
 }) {
   const [busqueda, setBusqueda] = useState("");
   const [paciente, setPaciente] = useState<Paciente | null>(null);
   const [abierto, setAbierto] = useState(false);
   const [resaltado, setResaltado] = useState(-1);
   const [tipo, setTipo] = useState(TIPOS_CITA[0]);
-  const [fecha, setFecha] = useState(() => fechaLocalISO(new Date()));
-  const [hora, setHora] = useState("09:00");
+  const [fecha, setFecha] = useState(() => fechaInicial ?? fechaLocalISO(new Date()));
+  const [hora, setHora] = useState(horaInicial ?? "09:00");
   const [duracion, setDuracion] = useState(45);
   const [error, setError] = useState("");
 

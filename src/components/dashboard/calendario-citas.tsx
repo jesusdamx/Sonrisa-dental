@@ -65,10 +65,12 @@ export default function CalendarioCitas({
   citas,
   onEditarCita,
   onMoverCita,
+  onNuevaCita,
 }: {
   citas: Cita[];
   onEditarCita?: (cita: Cita) => void;
   onMoverCita?: (id: string, fechaISO: string, hora: string) => void;
+  onNuevaCita?: (fechaISO: string, hora: string) => void;
 }) {
   return (
     <div>
@@ -110,6 +112,14 @@ export default function CalendarioCitas({
           if (info.event.extendedProps.pasada || !onEditarCita) return;
           const cita = citas.find((c) => c.id === info.event.id);
           if (cita) onEditarCita(cita);
+        }}
+        dateClick={(info) => {
+          // Solo permite crear cita en hoy o días futuros
+          const fechaISO = fechaLocalISO(info.date);
+          if (fechaISO < fechaLocalISO(new Date())) return;
+          const pad = (n: number) => String(n).padStart(2, "0");
+          const hora = `${pad(info.date.getHours())}:${pad(info.date.getMinutes())}`;
+          onNuevaCita?.(fechaISO, hora);
         }}
         height={680}
         slotMinTime="07:00:00"
