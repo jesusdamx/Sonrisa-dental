@@ -1,8 +1,56 @@
 @import "tailwindcss";
 
 :root {
+  /* Light theme (default) */
   --background: #f8fafc;
   --foreground: #0f172a;
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --text-tertiary: #94a3b8;
+  --sidebar-bg: #1e293b;
+  --sidebar-text: #f1f5f9;
+  --sidebar-hover: #334155;
+  --hover-bg: #f1f5f9;
+}
+
+html.dark {
+  --background: #0f172a;
+  --foreground: #f8fafc;
+  --card-bg: #1e293b;
+  --card-border: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #e2e8f0;
+  --text-tertiary: #cbd5e1;
+  --sidebar-bg: #020617;
+  --sidebar-text: #f1f5f9;
+  --sidebar-hover: #334155;
+  --hover-bg: #1e293b;
+}
+
+html.dark .text-slate-400,
+html.dark .text-slate-500,
+html.dark .text-slate-600,
+html.dark .text-slate-700,
+html.dark .text-slate-800,
+html.dark .text-slate-900 {
+  color: var(--text-primary) !important;
+}
+
+html.dark .text-slate-400 {
+  color: var(--text-tertiary) !important;
+}
+
+html.dark .text-slate-500 {
+  color: var(--text-secondary) !important;
+}
+
+html.dark .text-slate-600,
+html.dark .text-slate-700,
+html.dark .text-slate-800,
+html.dark .text-slate-900 {
+  color: var(--text-primary) !important;
 }
 
 @theme inline {
@@ -15,6 +63,173 @@
 body {
   background: var(--background);
   color: var(--foreground);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* ===== Componentes tema-aware ===== */
+
+/* Inputs de texto */
+.input-base {
+  border-radius: 0.75rem;
+  border: 1px solid var(--card-border);
+  background-color: var(--card-bg);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  transition: all 0.2s;
+}
+
+.input-base::placeholder {
+  color: var(--text-tertiary);
+}
+
+.input-base:focus {
+  border-color: #14b8a6;
+  outline: none;
+  ring: 2px rgba(20, 184, 166, 0.2);
+}
+
+/* En modo oscuro, asegurar que los inputs nativos sean legibles */
+html.dark input.input-base,
+html.dark select.input-base,
+html.dark textarea.input-base {
+  color: var(--text-primary);
+  background-color: var(--card-bg);
+}
+
+html.dark input[type="date"].input-base,
+html.dark input[type="time"].input-base,
+html.dark input[type="email"].input-base,
+html.dark input[type="text"].input-base,
+html.dark select.input-base {
+  color-scheme: dark;
+}
+
+/* Estilos para opciones dentro de select en modo oscuro */
+html.dark select.input-base option {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+}
+
+/* Modales */
+.modal-base {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid var(--card-border);
+  background-color: var(--card-bg);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--card-border);
+  padding: 1.5rem;
+}
+
+.modal-header h2,
+.modal-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.modal-body {
+  padding: 1.25rem 1.5rem;
+}
+
+.modal-body p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  border-top: 1px solid var(--card-border);
+  background-color: var(--hover-bg);
+  padding: 1rem 1.5rem;
+}
+
+/* Botones */
+.btn-base {
+  border-radius: 0.75rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid var(--card-border);
+}
+
+.btn-primary {
+  background-color: #14b8a6;
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(20, 184, 166, 0.3);
+}
+
+.btn-primary:hover {
+  background-color: #0d9488;
+}
+
+.btn-secondary {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  border-color: var(--card-border);
+}
+
+.btn-secondary:hover {
+  background-color: var(--hover-bg);
+}
+
+.btn-danger {
+  background-color: #f43f5e;
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(244, 63, 94, 0.3);
+}
+
+.btn-danger:hover {
+  background-color: #e11d48;
+}
+
+/* Dropdown/Select */
+.dropdown-base {
+  position: absolute;
+  z-index: 10;
+  margin-top: 0.5rem;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid var(--card-border);
+  background-color: var(--card-bg);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-item {
+  padding: 0.75rem 0.875rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background-color 0.1s;
+}
+
+.dropdown-item:hover,
+.dropdown-item[aria-selected="true"] {
+  background-color: var(--hover-bg);
 }
 
 /* Controles habilitados: cursor de puntero al pasar el mouse. */
@@ -22,6 +237,70 @@ button:not(:disabled) {
   cursor: pointer;
 }
 
+html.dark .fc,
+html.dark .fc * {
+  box-sizing: border-box;
+}
+
+html.dark .fc {
+  background-color: var(--card-bg) !important;
+  color: var(--text-primary) !important;
+}
+
+html.dark .fc .fc-toolbar-title,
+html.dark .fc .fc-col-header-cell-cushion,
+html.dark .fc .fc-daygrid-day-number,
+html.dark .fc .fc-timegrid-slot-label-cushion,
+html.dark .fc .fc-timegrid-axis-cushion,
+html.dark .fc .fc-timegrid-event .fc-event-title,
+html.dark .fc .fc-timegrid-event .fc-event-time,
+html.dark .fc .fc-daygrid-more-link,
+html.dark .fc .fc-event-title,
+html.dark .fc .fc-event-time {
+  color: var(--text-primary) !important;
+}
+
+html.dark .fc-theme-standard td,
+html.dark .fc-theme-standard th,
+html.dark .fc .fc-scrollgrid,
+html.dark .fc .fc-scrollgrid-section,
+html.dark .fc .fc-timegrid-slot,
+html.dark .fc .fc-daygrid-day,
+html.dark .fc .fc-scrollgrid-section > td,
+html.dark .fc .fc-scrollgrid-section > th {
+  border-color: var(--card-border) !important;
+}
+
+html.dark .fc .fc-button {
+  background-color: var(--card-bg) !important;
+  border-color: var(--card-border) !important;
+  color: var(--text-primary) !important;
+  box-shadow: none !important;
+}
+
+html.dark .fc .fc-button:hover {
+  background-color: var(--hover-bg) !important;
+}
+
+html.dark .fc .fc-button-primary:not(:disabled).fc-button-active,
+html.dark .fc .fc-button-primary:not(:disabled):active,
+html.dark .fc .fc-button-primary:not(:disabled):focus {
+  background-color: var(--sidebar-bg) !important;
+  border-color: var(--sidebar-bg) !important;
+  color: white !important;
+}
+
+html.dark .fc .fc-day-today {
+  background-color: rgba(20, 184, 166, 0.08) !important;
+}
+
+html.dark .fc .fc-timegrid-event {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark .fc .fc-event {
+  border-color: transparent !important;
+}
 /* Citas pasadas en el calendario: atenuadas y en solo lectura. */
 .fc-cita-pasada {
   opacity: 0.5;

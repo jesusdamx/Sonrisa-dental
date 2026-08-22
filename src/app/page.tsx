@@ -100,25 +100,30 @@ export default function DashboardPage() {
       {/* Encabezado */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm capitalize text-slate-500">{hoy}</p>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">
+          <p className="text-sm capitalize" style={{ color: "var(--text-secondary)" }}>{hoy}</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>
             Buen día, Dra. López 👋
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm" style={{ color: "var(--text-secondary)" }}>
             Este es el resumen de tu consultorio hoy.
           </p>
         </div>
         <div className="flex gap-2">
           <Link
             href="/pacientes"
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+            className="inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors hover:-translate-y-0.5"
+            style={{
+              borderColor: "var(--card-border)",
+              backgroundColor: "var(--card-bg)",
+              color: "var(--text-primary)",
+            }}
           >
             <UserPlus className="h-4 w-4" />
             Nuevo paciente
           </Link>
           <Link
             href="/citas"
-            className="inline-flex items-center gap-2 rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-teal-600/30 transition-colors hover:bg-teal-700"
+            className="inline-flex items-center gap-2 rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-teal-600/30 transition-colors hover:-translate-y-0.5 hover:bg-teal-500"
           >
             <CalendarPlus className="h-4 w-4" />
             Nueva cita
@@ -171,7 +176,8 @@ export default function DashboardPage() {
             action={
               <Link
                 href="/proximas-citas"
-                className="rounded-lg px-2 py-1 text-xs font-medium text-teal-600 transition-colors hover:bg-teal-50"
+                className="rounded-lg px-2 py-1 text-xs font-medium transition-colors hover:bg-teal-500/10"
+                style={{ color: "var(--text-primary)" }}
               >
                 Ver todas →
               </Link>
@@ -181,25 +187,25 @@ export default function DashboardPage() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[560px] text-left text-sm">
                 <thead>
-                  <tr className="text-xs text-slate-500">
-                    <th className="px-5 py-3 font-medium">Paciente</th>
-                    <th className="px-5 py-3 font-medium">Doctor(a)</th>
-                    <th className="px-5 py-3 font-medium">Fecha</th>
-                    <th className="px-5 py-3 font-medium">Tipo</th>
-                    <th className="px-5 py-3 font-medium">Estado</th>
+                  <tr style={{ color: "var(--text-secondary)" }}>
+                    <th className="px-5 py-3 font-medium" style={{ color: "var(--text-secondary)" }}>Paciente</th>
+                    <th className="px-5 py-3 font-medium" style={{ color: "var(--text-secondary)" }}>Doctor(a)</th>
+                    <th className="px-5 py-3 font-medium" style={{ color: "var(--text-secondary)" }}>Fecha</th>
+                    <th className="px-5 py-3 font-medium" style={{ color: "var(--text-secondary)" }}>Tipo</th>
+                    <th className="px-5 py-3 font-medium" style={{ color: "var(--text-secondary)" }}>Estado</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y" style={{ borderColor: "var(--card-border)" }}>
                   {proximas.map((cita) => (
-                    <tr key={cita.id} className="hover:bg-slate-50/70">
-                      <td className="px-5 py-3 font-medium text-slate-900">
+                    <tr key={cita.id}>
+                      <td className="px-5 py-3 font-medium" style={{ color: "var(--text-primary)" }}>
                         {cita.paciente}
                       </td>
-                      <td className="px-5 py-3 text-slate-600">{cita.doctor}</td>
-                      <td className="px-5 py-3 whitespace-nowrap text-slate-600">
+                      <td className="px-5 py-3" style={{ color: "var(--text-secondary)" }}>{cita.doctor}</td>
+                      <td className="px-5 py-3 whitespace-nowrap" style={{ color: "var(--text-secondary)" }}>
                         {cita.fecha} · {cita.hora}
                       </td>
-                      <td className="px-5 py-3 text-slate-600">{cita.tipo}</td>
+                      <td className="px-5 py-3" style={{ color: "var(--text-secondary)" }}>{cita.tipo}</td>
                       <td className="px-5 py-3">
                         <Badge
                           variant={estadoCita[cita.estado].variant}
@@ -220,7 +226,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader title="Actividad reciente" />
           <CardContent className="px-0 pt-0">
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y" style={{ borderColor: "var(--card-border)" }}>
               {actividadReciente.map((act) => (
                 <li key={act.id} className="flex items-start gap-3 px-5 py-3">
                   <span
@@ -229,10 +235,10 @@ export default function DashboardPage() {
                     {iconoActividad[act.tipo]}
                   </span>
                   <div className="min-w-0">
-                    <p className="text-sm leading-snug text-slate-700">
+                    <p className="text-sm leading-snug" style={{ color: "var(--text-primary)" }}>
                       {act.texto}
                     </p>
-                    <p className="mt-0.5 text-xs text-slate-400">{act.detalle}</p>
+                    <p className="mt-0.5 text-xs" style={{ color: "var(--text-tertiary)" }}>{act.detalle}</p>
                   </div>
                 </li>
               ))}
@@ -242,15 +248,15 @@ export default function DashboardPage() {
       </div>
 
       {/* Aviso de disponibilidad */}
-      <Card className="flex flex-wrap items-center gap-4 border-teal-100 bg-gradient-to-r from-teal-50 to-cyan-50 p-5">
+      <Card className="flex flex-wrap items-center gap-4 p-5" style={{ background: "linear-gradient(90deg, rgba(20,184,166,0.12), rgba(34,211,238,0.08))", borderColor: "rgba(45, 212, 191, 0.3)" }}>
         <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-600/10 text-teal-600">
           <Stethoscope className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-slate-900">
+          <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
             El Dr. Marco Salazar no atenderá el viernes
           </p>
-          <p className="mt-0.5 text-sm text-slate-600">
+          <p className="mt-0.5 text-sm" style={{ color: "var(--text-secondary)" }}>
             Sus citas de cirugía oral se reprogramaron para la próxima semana.
             {` `}
             <Link
@@ -261,7 +267,7 @@ export default function DashboardPage() {
             </Link>
           </p>
         </div>
-        <span className="hidden text-xs text-slate-400 sm:block">
+        <span className="hidden text-xs sm:block" style={{ color: "var(--text-tertiary)" }}>
           {pacientes.length} pacientes de ejemplo cargados
         </span>
       </Card>

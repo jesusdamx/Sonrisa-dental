@@ -10,9 +10,8 @@ import {
   type EstadoCita,
 } from "@/lib/data";
 
-const inputCls =
-  "w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20";
-const labelCls = "mb-1.5 block text-xs font-medium text-slate-600";
+const inputCls = "w-full input-base";
+const labelCls = "mb-1.5 block text-xs font-medium";
 
 const ESTADOS: { value: EstadoCita; label: string }[] = [
   { value: "pendiente", label: "Pendiente" },
@@ -73,28 +72,26 @@ export default function ModalEditarCita({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4"
+      className="modal-base"
       onClick={onCerrar}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-editar-cita-titulo"
     >
       <div
-        className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
+        className="modal-content w-full max-w-md"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-          <h2
-            id="modal-editar-cita-titulo"
-            className="text-base font-semibold text-slate-900"
-          >
+        <div className="modal-header">
+          <h2 id="modal-editar-cita-titulo">
             Editar cita
           </h2>
           <button
             type="button"
             onClick={onCerrar}
             aria-label="Cerrar"
-            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-lg p-1.5 transition-colors hover:opacity-70"
+            style={{ color: "var(--text-secondary)" }}
           >
             <X className="h-4 w-4" />
           </button>
@@ -106,12 +103,12 @@ export default function ModalEditarCita({
             guardar();
           }}
         >
-          <div className="space-y-4 px-6 py-5">
-            <div className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
-              <p className="text-sm font-medium text-slate-900">
+          <div className="modal-body space-y-4">
+            <div className="rounded-xl border px-4 py-3" style={{ backgroundColor: "var(--hover-bg)", borderColor: "var(--card-border)" }}>
+              <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
                 {cita.paciente}
               </p>
-              <p className="mt-0.5 flex items-center gap-1.5 text-xs text-slate-500">
+              <p className="mt-0.5 flex items-center gap-1.5 text-xs" style={{ color: "var(--text-secondary)" }}>
                 <CalendarClock className="h-3.5 w-3.5" />
                 {cita.doctor} · {cita.fecha}, {cita.hora}
               </p>
@@ -189,14 +186,14 @@ export default function ModalEditarCita({
             ) : null}
           </div>
 
-          <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/60 px-6 py-4">
+          <div className="modal-footer" style={{ justifyContent: "space-between" }}>
             {onEliminar ? (
               <button
                 type="button"
                 onClick={() => setMostrarConfirmacion(true)}
-                className="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50/60 px-3 py-2 text-sm font-medium text-rose-600 transition-colors hover:bg-rose-100"
+                className="btn-base" style={{ backgroundColor: "rgba(244, 63, 94, 0.1)", color: "#f43f5e", border: "1px solid rgba(244, 63, 94, 0.3)" }}
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-4 w-4" style={{ display: "inline", marginRight: "0.5rem" }} />
                 Eliminar
               </button>
             ) : (
@@ -206,13 +203,13 @@ export default function ModalEditarCita({
               <button
                 type="button"
                 onClick={onCerrar}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
+                className="btn-base btn-secondary"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-teal-600/30 transition-colors hover:bg-teal-700"
+                className="btn-base btn-primary"
               >
                 Guardar cambios
               </button>
@@ -222,22 +219,22 @@ export default function ModalEditarCita({
 
         {mostrarConfirmacion && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4"
+            className="modal-base"
             onClick={() => setMostrarConfirmacion(false)}
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="modal-confirmar-titulo"
           >
             <div
-              className="w-full max-w-sm overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
+              className="modal-content w-full max-w-sm"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+              <div className="modal-header">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-50">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ backgroundColor: "rgba(244, 63, 94, 0.1)" }}>
                     <AlertTriangle className="h-5 w-5 text-rose-600" />
                   </span>
-                  <h3 className="text-base font-semibold text-slate-900">
+                  <h3>
                     Eliminar cita
                   </h3>
                 </div>
@@ -245,34 +242,35 @@ export default function ModalEditarCita({
                   type="button"
                   onClick={() => setMostrarConfirmacion(false)}
                   aria-label="Cerrar"
-                  className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                  className="rounded-lg p-1.5 transition-colors hover:opacity-70"
+                  style={{ color: "var(--text-secondary)" }}
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
 
-              <div className="px-6 py-5">
-                <p className="text-sm text-slate-600">
+              <div className="modal-body">
+                <p>
                   ¿Estás seguro de que deseas eliminar esta cita de{" "}
                   <span className="font-medium">{cita.paciente}</span> con el{" "}
                   <span className="font-medium">{cita.doctor}</span>? Esta acción no se puede deshacer.
                 </p>
               </div>
 
-              <div className="flex justify-end gap-2 border-t border-slate-100 bg-slate-50/60 px-6 py-4">
+              <div className="modal-footer">
                 <button
                   type="button"
                   onClick={() => setMostrarConfirmacion(false)}
-                  className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
+                  className="btn-base btn-secondary"
                 >
                   Cancelar
                 </button>
                 <button
                   type="button"
                   onClick={handleEliminar}
-                  className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-rose-600/30 transition-colors hover:bg-rose-700"
+                  className="btn-base btn-danger"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4" style={{ display: "inline", marginRight: "0.5rem" }} />
                   Eliminar
                 </button>
               </div>

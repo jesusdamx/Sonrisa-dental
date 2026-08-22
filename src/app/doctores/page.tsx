@@ -12,10 +12,10 @@ export default function DoctoresPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>
             Doctores
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm" style={{ color: "var(--text-secondary)" }}>
             {doctores.length} especialistas que atienden en el consultorio.
           </p>
         </div>
@@ -32,8 +32,8 @@ export default function DoctoresPage() {
               <div className="flex items-center gap-3">
                 <Avatar iniciales={d.iniciales} color={d.color} size="lg" />
                 <div>
-                  <p className="font-semibold text-slate-900">{d.nombre}</p>
-                  <p className="text-xs text-slate-500">{d.especialidad}</p>
+                  <p className="font-semibold" style={{ color: "var(--text-primary)" }}>{d.nombre}</p>
+                  <p className="text-xs" style={{ color: "var(--text-secondary)" }}>{d.especialidad}</p>
                 </div>
               </div>
               <Badge variant={d.disponible ? "success" : "neutral"} dot>
@@ -41,24 +41,24 @@ export default function DoctoresPage() {
               </Badge>
             </div>
 
-            <div className="mt-4 space-y-2 text-sm text-slate-600">
+            <div className="mt-4 space-y-2 text-sm" style={{ color: "var(--text-secondary)" }}>
               <p className="flex items-center gap-2">
-                <Clock className="h-4 w-4 shrink-0 text-slate-400" />
+                <Clock className="h-4 w-4 shrink-0" style={{ color: "var(--text-tertiary)" }} />
                 {d.horario}
               </p>
               <p className="flex items-center gap-2">
-                <Phone className="h-4 w-4 shrink-0 text-slate-400" />
+                <Phone className="h-4 w-4 shrink-0" style={{ color: "var(--text-tertiary)" }} />
                 {d.telefono}
               </p>
               <p className="flex items-center gap-2 truncate">
-                <Mail className="h-4 w-4 shrink-0 text-slate-400" />
+                <Mail className="h-4 w-4 shrink-0" style={{ color: "var(--text-tertiary)" }} />
                 <span className="truncate">{d.email}</span>
               </p>
             </div>
 
-            <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4 text-sm">
-              <span className="inline-flex items-center gap-1.5 text-slate-600">
-                <Stethoscope className="h-4 w-4 text-slate-400" />
+            <div className="mt-4 flex items-center justify-between border-t pt-4 text-sm" style={{ borderTopColor: "var(--card-border)" }}>
+              <span className="inline-flex items-center gap-1.5" style={{ color: "var(--text-secondary)" }}>
+                <Stethoscope className="h-4 w-4" style={{ color: "var(--text-tertiary)" }} />
                 {d.pacientes.toLocaleString("es-MX")} pacientes
               </span>
               <span className="inline-flex items-center gap-1 font-medium text-amber-500">
@@ -70,9 +70,9 @@ export default function DoctoresPage() {
         ))}
       </div>
 
-      <Card className="border-teal-100 bg-gradient-to-r from-teal-50 to-cyan-50 p-5">
-        <p className="text-sm text-slate-600">
-          <b className="text-slate-900">¿Buscas un especialista?</b> El equipo
+      <Card className="p-5" style={{ background: "linear-gradient(90deg, rgba(20,184,166,0.12), rgba(34,211,238,0.08))", borderColor: "rgba(45, 212, 191, 0.3)" }}>
+        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+          <b style={{ color: "var(--text-primary)" }}>¿Buscas un especialista?</b> El equipo
           cubre odontología general, ortodoncia, endodoncia, cirugía oral,
           periodoncia e implantología. Consulta la disponibilidad en la sección
           de citas.

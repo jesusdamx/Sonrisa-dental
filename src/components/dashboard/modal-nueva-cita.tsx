@@ -20,9 +20,8 @@ import {
   type Paciente,
 } from "@/lib/data";
 
-const inputCls =
-  "w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20";
-const labelCls = "mb-1.5 block text-xs font-medium text-slate-600";
+const inputCls = "w-full input-base";
+const labelCls = "mb-1.5 block text-xs font-medium" + " cursor-default";
 
 function doctorAleatorio(): string {
   const disponibles = doctores.filter((d) => d.disponible);
@@ -78,6 +77,7 @@ export default function ModalNuevaCita({
     (p) => normalizarTexto(p.nombre) === normalizarTexto(busqueda)
   );
   const mostrarNuevo = busqueda.trim().length > 0 && !hayNombreExacto;
+  const hayErrorPaciente = !!error && !paciente && !busqueda.trim();
 
   function onBusqueda(v: string) {
     setBusqueda(v);
@@ -153,28 +153,26 @@ export default function ModalNuevaCita({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4"
+      className="modal-base"
       onClick={onCerrar}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-nueva-cita-titulo"
     >
       <div
-        className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
+        className="modal-content w-full max-w-md"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-          <h2
-            id="modal-nueva-cita-titulo"
-            className="text-base font-semibold text-slate-900"
-          >
+        <div className="modal-header">
+          <h2 id="modal-nueva-cita-titulo">
             Nueva cita
           </h2>
           <button
             type="button"
             onClick={onCerrar}
             aria-label="Cerrar"
-            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-lg p-1.5 transition-colors hover:opacity-70"
+            style={{ color: "var(--text-secondary)" }}
           >
             <X className="h-4 w-4" />
           </button>
@@ -186,7 +184,7 @@ export default function ModalNuevaCita({
             guardar();
           }}
         >
-          <div className="space-y-4 px-6 py-5">
+          <div className="modal-body space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <label className="block">
                 <span className={labelCls}>Fecha</span>
@@ -242,7 +240,12 @@ export default function ModalNuevaCita({
 
             <div className="relative">
               <label className="block">
-                <span className={labelCls}>Paciente</span>
+                <span
+                  className={labelCls}
+                  style={{ color: hayErrorPaciente ? "#fca5a5" : "var(--text-secondary)" }}
+                >
+                  Paciente
+                </span>
                 <input
                   type="search"
                   role="combobox"
@@ -254,7 +257,16 @@ export default function ModalNuevaCita({
                   onBlur={() => setAbierto(false)}
                   onKeyDown={onTecla}
                   placeholder="Busca un paciente…"
-                  className={inputCls}
+                  className={`${inputCls} ${hayErrorPaciente ? "border-red-400" : ""}`}
+                  style={
+                    hayErrorPaciente
+                      ? {
+                          borderColor: "#f87171",
+                          boxShadow: "0 0 0 1px rgba(248, 113, 113, 0.15)",
+                          backgroundColor: "rgba(239, 68, 68, 0.03)",
+                        }
+                      : undefined
+                  }
                 />
               </label>
 
@@ -262,7 +274,7 @@ export default function ModalNuevaCita({
                 <div
                   id="lista-pacientes"
                   role="listbox"
-                  className="absolute z-10 mt-2 w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg shadow-slate-900/5"
+                  className="absolute z-10 mt-2 w-full overflow-hidden rounded-xl dropdown-base"
                 >
                   {coincidencias.length > 0 ? (
                     <ul className="max-h-56 overflow-auto py-1">
@@ -292,13 +304,13 @@ export default function ModalNuevaCita({
                       ))}
                     </ul>
                   ) : (
-                    <p className="px-3.5 py-3 text-sm text-slate-400">
+                    <p className="px-3.5 py-3 text-sm" style={{ color: "var(--text-tertiary)" }}>
                       Sin coincidencias
                     </p>
                   )}
 
                   {mostrarNuevo ? (
-                    <div className="border-t border-slate-100">
+                    <div style={{ borderTopColor: "var(--card-border)", borderTopWidth: "1px" }}>
                       <button
                         type="button"
                         role="option"
@@ -309,13 +321,14 @@ export default function ModalNuevaCita({
                         className={`flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm transition-colors ${
                           resaltado === coincidencias.length
                             ? "bg-teal-50 text-teal-900"
-                            : "text-slate-600"
+                            : ""
                         }`}
+                        style={{ color: resaltado === coincidencias.length ? "#0f172a" : "var(--text-secondary)" }}
                       >
-                        <UserPlus className="h-4 w-4 shrink-0 text-slate-400" />
+                        <UserPlus className="h-4 w-4 shrink-0" style={{ color: "var(--text-tertiary)" }} />
                         <span>
                           Usar{" "}
-                          <span className="font-medium text-slate-900">
+                          <span className="font-medium" style={{ color: "var(--text-primary)" }}>
                             «{busqueda.trim()}»
                           </span>{" "}
                           como nuevo
@@ -328,32 +341,38 @@ export default function ModalNuevaCita({
             </div>
 
             <label className="block">
-              <span className={labelCls}>Doctor(a)</span>
-              <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700">
-                <Stethoscope className="h-4 w-4 text-slate-400" />
+              <span className={labelCls} style={{ color: "var(--text-secondary)" }}>Doctor(a)</span>
+              <div className="flex items-center gap-2 rounded-xl border px-3.5 py-2.5 text-sm" style={{ backgroundColor: "var(--hover-bg)", borderColor: "var(--card-border)", color: "var(--text-secondary)" }}>
+                <Stethoscope className="h-4 w-4" />
                 {doctorAsignado}
-                <span className="ml-auto text-[11px] text-slate-400">
+                <span className="ml-auto text-[11px]">
                   asignación automática
                 </span>
               </div>
             </label>
 
             {error ? (
-              <p className="text-xs font-medium text-rose-600">{error}</p>
+              <p
+                className="flex items-center gap-1.5 text-xs font-medium"
+                style={{ color: "#fca5a5" }}
+              >
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-rose-400" />
+                {error}
+              </p>
             ) : null}
           </div>
 
-          <div className="flex justify-end gap-2 border-t border-slate-100 bg-slate-50/60 px-6 py-4">
+          <div className="modal-footer">
             <button
               type="button"
               onClick={onCerrar}
-              className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
+              className="btn-base btn-secondary"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="inline-flex items-center gap-2 rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-teal-600/30 transition-colors hover:bg-teal-700"
+              className="btn-base btn-primary"
             >
               Guardar cita
             </button>

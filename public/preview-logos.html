@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logo Telegram - Preview</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      color: white;
+    }
+    h1 { 
+      margin-bottom: 10px;
+      font-size: 28px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .subtitle {
+      color: #888;
+      margin-bottom: 40px;
+      font-size: 14px;
+    }
+    .container {
+      display: flex;
+      gap: 60px;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .logo-card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .logo-card h3 {
+      margin-bottom: 15px;
+      color: #aaa;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .logo-card img {
+      display: block;
+      margin: 0 auto 20px;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+    }
+    .size-info {
+      font-size: 12px;
+      color: #666;
+      margin-top: 10px;
+    }
+    .preview-section {
+      margin-top: 50px;
+      text-align: center;
+    }
+    .preview-section h2 {
+      margin-bottom: 20px;
+      color: #aaa;
+      font-size: 16px;
+    }
+    .telegram-preview {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      background: rgba(255,255,255,0.08);
+      padding: 15px 25px;
+      border-radius: 15px;
+    }
+    .chat-bubble {
+      background: #2b5278;
+      color: white;
+      padding: 12px 18px;
+      border-radius: 18px 18px 18px 4px;
+      font-size: 14px;
+      max-width: 300px;
+    }
+    .chat-info {
+      text-align: left;
+      margin-left: 15px;
+    }
+    .chat-info .name {
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .chat-info .members {
+      font-size: 12px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <h1>Logo para Canal de Telegram</h1>
+  <p class="subtitle">Recursos: Películas • Series • Juegos • Programas</p>
+  
+  <div class="container">
+    <div class="logo-card">
+      <h3>Logo Principal</h3>
+      <img src="/logo-telegram.svg" alt="Logo principal" width="300" height="300">
+      <p class="size-info">400 × 400 px • SVG vectorial</p>
+    </div>
+    
+    <div class="logo-card">
+      <h3>Foto de Perfil</h3>
+      <img src="/logo-telegram-mini.svg" alt="Logo mini" width="150" height="150">
+      <p class="size-info">200 × 200 px • Optimizado para tamaño pequeño</p>
+    </div>
+  </div>
+  
+  <div class="preview-section">
+    <h2>Vista Previa en Telegram</h2>
+    <div class="telegram-preview">
+      <img src="/logo-telegram-mini.svg" alt="Avatar" width="50" height="50" style="border-radius: 50%;">
+      <div class="chat-info">
+        <div class="name">🎬 RESOURCE Hub</div>
+        <div class="members">1,234 miembros</div>
+      </div>
+      <div class="chat-bubble">
+        ¡Nuevo! 🎥 Películas de estreno 2024 disponibles...
+      </div>
+    </div>
+  </div>
+</body>
+</html>

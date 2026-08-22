@@ -143,11 +143,11 @@ export default function CalendarioCitas({
             {ETIQUETA_ESTADO[estado]}
           </span>
         ))}
-        <span className="inline-flex items-center gap-1.5">
-          <Lock className="h-3 w-3 text-slate-400" />
-          <span className="text-slate-400">Pasadas: solo lectura</span>
+        <span className="inline-flex items-center gap-1.5" style={{ color: "var(--text-tertiary)" }}>
+          <Lock className="h-3 w-3" style={{ color: "var(--text-tertiary)" }} />
+          <span>Pasadas: solo lectura</span>
         </span>
-        <span className="ml-auto hidden text-slate-400 sm:block">
+        <span className="ml-auto hidden sm:block" style={{ color: "var(--text-tertiary)" }}>
           {citas.length} cita(s) en la vista actual
         </span>
       </div>

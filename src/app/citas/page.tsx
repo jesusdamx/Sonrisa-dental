@@ -91,10 +91,10 @@ export default function CitasPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>
             Citas
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm" style={{ color: "var(--text-secondary)" }}>
             Agenda completa del consultorio: {listaCitas.length} registros.
           </p>
         </div>
@@ -107,16 +107,30 @@ export default function CitasPage() {
         </button>
       </div>
 
-      <div className="flex w-fit items-center gap-1 rounded-xl border border-slate-200 bg-white p-1">
+      <div
+        className="flex w-fit items-center gap-1 rounded-xl border p-1"
+        style={{
+          borderColor: "var(--card-border)",
+          backgroundColor: "var(--card-bg)",
+        }}
+      >
         {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setVista(tab.key)}
             className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-              vista === tab.key
-                ? "bg-slate-900 text-white"
-                : "text-slate-600 hover:bg-slate-50"
+              vista === tab.key ? "bg-slate-900 text-white" : ""
             }`}
+            style={
+              vista === tab.key
+                ? {
+                    backgroundColor: "var(--sidebar-bg)",
+                    color: "white",
+                  }
+                : {
+                    color: "var(--text-secondary)",
+                  }
+            }
           >
             <tab.icon className="h-4 w-4" />
             {tab.label}
@@ -129,11 +143,22 @@ export default function CitasPage() {
           <button
             key={f.key}
             onClick={() => setFiltro(f.key)}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-              filtro === f.key
-                ? "bg-slate-900 text-white"
-                : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+            className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+              filtro === f.key ? "text-white" : ""
             }`}
+            style={
+              filtro === f.key
+                ? {
+                    backgroundColor: "var(--sidebar-bg)",
+                    borderColor: "var(--card-border)",
+                    color: "white",
+                  }
+                : {
+                    backgroundColor: "var(--card-bg)",
+                    borderColor: "var(--card-border)",
+                    color: "var(--text-secondary)",
+                  }
+            }
           >
             {f.label}
           </button>
@@ -154,70 +179,75 @@ export default function CitasPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[760px] text-left text-sm">
               <thead>
-                <tr className="text-xs text-slate-500">
-                  <th className="px-5 py-3 font-medium">Paciente</th>
-                  <th className="px-5 py-3 font-medium">Doctor(a)</th>
-                  <th className="px-5 py-3 font-medium">Fecha</th>
-                  <th className="px-5 py-3 font-medium">Hora</th>
-                  <th className="px-5 py-3 font-medium">Tipo</th>
-                  <th className="px-5 py-3 font-medium">Duración</th>
-                  <th className="px-5 py-3 font-medium">Estado</th>
-                  <th className="px-5 py-3 font-medium">Acciones</th>
+                <tr style={{ color: "var(--text-secondary)" }}>
+                  <th className="px-5 py-3 font-medium" style={{ color: "var(--text-secondary)" }}>Paciente</th>
+                  <th className="px-5 py-3 font-medium" style={{ color: "var(--text-secondary)" }}>Doctor(a)</th>
+                  <th className="px-5 py-3 font-medium" style={{ color: "var(--text-secondary)" }}>Fecha</th>
+                  <th className="px-5 py-3 font-medium" style={{ color: "var(--text-secondary)" }}>Hora</th>
+                  <th className="px-5 py-3 font-medium" style={{ color: "var(--text-secondary)" }}>Tipo</th>
+                  <th className="px-5 py-3 font-medium" style={{ color: "var(--text-secondary)" }}>Duración</th>
+                  <th className="px-5 py-3 font-medium" style={{ color: "var(--text-secondary)" }}>Estado</th>
+                  <th className="px-5 py-3 font-medium" style={{ color: "var(--text-secondary)" }}>Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody style={{ borderColor: "var(--card-border)" }} className="divide-y">
                 {visibles.map((cita) => {
                   const pasada = esCitaPasada(cita.fechaISO);
                   return (
-                  <tr
-                    key={cita.id}
-                    className={pasada ? "opacity-60" : "hover:bg-slate-50/70"}
-                  >
-                    <td className="px-5 py-3 font-medium text-slate-900">
-                      {cita.paciente}
-                    </td>
-                    <td className="px-5 py-3 whitespace-nowrap text-slate-600">
-                      {cita.doctor}
-                    </td>
-                    <td className="px-5 py-3 whitespace-nowrap text-slate-600">
-                      {cita.fecha}
-                    </td>
-                    <td className="px-5 py-3 whitespace-nowrap text-slate-600">
-                      {cita.hora}
-                    </td>
-                    <td className="px-5 py-3 text-slate-600">{cita.tipo}</td>
-                    <td className="px-5 py-3 whitespace-nowrap text-slate-600">
-                      {cita.duracion}
-                    </td>
-                    <td className="px-5 py-3">
-                      <Badge variant={estadoBadge[cita.estado].variant} dot>
-                        {estadoBadge[cita.estado].label}
-                      </Badge>
-                    </td>
-                    <td className="px-5 py-3 whitespace-nowrap">
-                      {pasada ? (
-                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400">
-                          <Lock className="h-3.5 w-3.5" />
-                          Pasada
-                        </span>
-                      ) : (
-                        <button
-                          onClick={() => setCitaEnEdicion(cita)}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700"
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                          Editar
-                        </button>
-                      )}
-                    </td>
-                  </tr>
+                    <tr
+                      key={cita.id}
+                      className={pasada ? "opacity-60" : ""}
+                      style={pasada ? undefined : { backgroundColor: "transparent" }}
+                    >
+                      <td className="px-5 py-3 font-medium" style={{ color: "var(--text-primary)" }}>
+                        {cita.paciente}
+                      </td>
+                      <td className="px-5 py-3 whitespace-nowrap" style={{ color: "var(--text-secondary)" }}>
+                        {cita.doctor}
+                      </td>
+                      <td className="px-5 py-3 whitespace-nowrap" style={{ color: "var(--text-secondary)" }}>
+                        {cita.fecha}
+                      </td>
+                      <td className="px-5 py-3 whitespace-nowrap" style={{ color: "var(--text-secondary)" }}>
+                        {cita.hora}
+                      </td>
+                      <td className="px-5 py-3" style={{ color: "var(--text-secondary)" }}>{cita.tipo}</td>
+                      <td className="px-5 py-3 whitespace-nowrap" style={{ color: "var(--text-secondary)" }}>
+                        {cita.duracion}
+                      </td>
+                      <td className="px-5 py-3">
+                        <Badge variant={estadoBadge[cita.estado].variant} dot>
+                          {estadoBadge[cita.estado].label}
+                        </Badge>
+                      </td>
+                      <td className="px-5 py-3 whitespace-nowrap">
+                        {pasada ? (
+                          <span className="inline-flex items-center gap-1.5 text-xs font-medium" style={{ color: "var(--text-tertiary)" }}>
+                            <Lock className="h-3.5 w-3.5" />
+                            Pasada
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => setCitaEnEdicion(cita)}
+                            className="btn-base btn-secondary inline-flex items-center gap-1.5 px-3 py-1.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-400 hover:bg-teal-500/10 hover:text-teal-200"
+                            style={{
+                              boxShadow: "0 0 0 1px rgba(45, 212, 191, 0.12)",
+                            }}
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                            Editar
+                          </button>
+                        )}
+                      </td>
+                    </tr>
                   );
                 })}
                 {visibles.length === 0 ? (
                   <tr>
                     <td
                       colSpan={8}
-                      className="px-5 py-10 text-center text-sm text-slate-400"
+                      className="px-5 py-10 text-center text-sm"
+                      style={{ color: "var(--text-tertiary)" }}
                     >
                       No hay citas con ese estado.
                     </td>
@@ -226,7 +256,10 @@ export default function CitasPage() {
               </tbody>
             </table>
           </div>
-          <CardContent className="border-t border-slate-100 text-xs text-slate-400">
+          <CardContent
+            className="border-t text-xs"
+            style={{ borderTopColor: "var(--card-border)", color: "var(--text-tertiary)" }}
+          >
             Consejo: las citas marcadas como «pendiente» se muestran también en
             la sección de próximas citas.
           </CardContent>
