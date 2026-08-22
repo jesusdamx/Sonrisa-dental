@@ -9,7 +9,11 @@ export function Card({
 }) {
   return (
     <div
-      className={`rounded-2xl border border-slate-200 bg-white shadow-sm ${className}`}
+      className={`rounded-2xl border shadow-sm ${className}`}
+      style={{
+        backgroundColor: "var(--card-bg)",
+        borderColor: "var(--card-border)",
+      }}
     >
       {children}
     </div>
@@ -29,12 +33,17 @@ export function CardHeader({
 }) {
   return (
     <div
-      className={`flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 px-5 py-4 ${className}`}
+      className={`flex flex-wrap items-start justify-between gap-3 border-b px-5 py-4 ${className}`}
+      style={{ borderColor: "var(--card-border)" }}
     >
       <div>
-        <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
+        <h3 className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+          {title}
+        </h3>
         {subtitle ? (
-          <p className="mt-0.5 text-xs text-slate-500">{subtitle}</p>
+          <p className="mt-0.5 text-xs" style={{ color: "var(--text-secondary)" }}>
+            {subtitle}
+          </p>
         ) : null}
       </div>
       {action}

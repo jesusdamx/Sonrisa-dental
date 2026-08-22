@@ -1,0 +1,90 @@
+
+> dental-dashboard@0.1.0 dev
+> next dev
+
+▲ Next.js 16.3.0 (Turbopack)
+- Local:         http://localhost:34417
+- Network:       http://192.168.100.50:34417
+✓ Ready in 268ms
+✓ Running next.config.ts took 25ms
+
+ GET /citas 200 in 435ms (next.js: 204ms, application-code: 232ms)
+ GET /citas 200 in 44ms (next.js: 4ms, application-code: 40ms)
+ GET /citas 200 in 45ms (next.js: 5ms, application-code: 39ms)
+✓ Compiled in 89ms
+✓ Compiled in 54ms
+ GET /citas 200 in 31ms (next.js: 8ms, application-code: 22ms)
+✓ Compiled in 68ms
+ GET /citas 200 in 19ms (next.js: 5ms, application-code: 14ms)
+✓ Compiled in 90ms
+ GET /citas 200 in 28ms (next.js: 3ms, application-code: 25ms)
+✓ Compiled in 59ms
+ GET /citas 200 in 59ms (next.js: 4ms, application-code: 55ms)
+ GET /pacientes 200 in 57ms (next.js: 15ms, application-code: 42ms)
+ GET /pacientes 200 in 36ms (next.js: 5ms, application-code: 32ms)
+ GET /citas 200 in 139ms (next.js: 13ms, application-code: 126ms)
+ GET /citas 200 in 74ms (next.js: 3ms, application-code: 71ms)
+✓ Compiled in 121ms
+✓ Compiled in 46ms
+✓ Compiled in 43ms
+✓ Compiled in 49ms
+ GET /citas 200 in 25ms (next.js: 5ms, application-code: 20ms)
+✓ Compiled in 40ms
+ GET /citas 200 in 21ms (next.js: 5ms, application-code: 16ms)
+✓ Compiled in 31ms
+ GET /citas 200 in 21ms (next.js: 8ms, application-code: 13ms)
+✓ Compiled in 28ms
+ GET /citas 200 in 22ms (next.js: 5ms, application-code: 17ms)
+✓ Compiled in 49ms
+[browser] Uncaught TypeError: Illegal constructor
+    at CalendarioCitas (src/components/dashboard/calendario-citas.tsx:104:11)
+    at CitasPage (src/app/citas/page.tsx:102:11)
+  102 |         ))}
+  103 |         <span className="inline-flex items-center gap-1.5">
+> 104 |           <Lock className="h-3 w-3 text-slate-400" />
+      |           ^
+  105 |           <span className="text-slate-400">Pasadas: solo lectura</span>
+  106 |         </span>
+  107 |         <span className="ml-auto hidden text-slate-400 sm:block">
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+✓ Compiled in 103ms
+ GET /citas 200 in 52ms (next.js: 4ms, application-code: 48ms)
+ GET /citas 200 in 20ms (next.js: 6ms, application-code: 14ms)
+✓ Compiled in 69ms
+ GET /citas 200 in 25ms (next.js: 6ms, application-code: 20ms)
+✓ Compiled in 68ms
+✓ Compiled in 78ms
+ GET /citas 200 in 62ms (next.js: 3ms, application-code: 59ms)
+ GET /citas 200 in 41ms (next.js: 1.4ms, application-code: 40ms)
+✓ Compiled in 42ms
+✓ Compiled in 39ms
+✓ Compiled in 48ms
+ GET /citas 200 in 29ms (next.js: 6ms, application-code: 22ms)
+✓ Compiled in 24ms
+ GET /citas 200 in 66ms (next.js: 4ms, application-code: 62ms)
+✓ Compiled in 69ms
+✓ Compiled in 70ms
+ GET /citas 200 in 26ms (next.js: 6ms, application-code: 20ms)
+✓ Compiled in 26ms
+ GET /citas 200 in 70ms (next.js: 5ms, application-code: 65ms)
+✓ Compiled in 51ms
+✓ Compiled in 50ms
+ GET /citas 200 in 29ms (next.js: 6ms, application-code: 23ms)
+✓ Compiled in 29ms
+✓ Compiled in 33ms
+ GET /citas 200 in 35ms (next.js: 6ms, application-code: 29ms)
+✓ Compiled in 39ms
+ GET /citas 200 in 44ms (next.js: 10ms, application-code: 34ms)
+✓ Compiled in 42ms
+ GET /citas 200 in 59ms (next.js: 4ms, application-code: 55ms)
+✓ Compiled in 46ms
+ GET / 200 in 623ms (next.js: 156ms, application-code: 467ms)
+ GET / 200 in 488ms (next.js: 31ms, application-code: 457ms)
+ GET /citas 200 in 185ms (next.js: 29ms, application-code: 157ms)
+ GET /pacientes 200 in 183ms (next.js: 43ms, application-code: 140ms)
+ GET / 200 in 189ms (next.js: 17ms, application-code: 172ms)
+ GET /citas 200 in 148ms (next.js: 19ms, application-code: 129ms)
+✓ Compiled in 322ms
+ GET /citas 200 in 220ms (next.js: 55ms, application-code: 165ms)
+ GET /citas 200 in 583ms (next.js: 61ms, application-code: 522ms)
+[?25h

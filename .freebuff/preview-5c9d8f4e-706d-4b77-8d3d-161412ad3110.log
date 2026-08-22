@@ -1,0 +1,20 @@
+
+> dental-dashboard@0.1.0 dev
+> next dev
+
+▲ Next.js 16.3.0 (Turbopack)
+- Local:         http://localhost:37337
+- Network:       http://192.168.100.50:37337
+✓ Ready in 2.6s
+✓ Running next.config.ts took 421ms
+
+ GET / 200 in 3.9s (next.js: 1982ms, application-code: 1945ms)
+ GET / 200 in 579ms (next.js: 87ms, application-code: 492ms)
+ GET / 200 in 486ms (next.js: 16ms, application-code: 470ms)
+ GET /citas 200 in 526ms (next.js: 292ms, application-code: 234ms)
+✓ Compiled in 1039ms
+ GET /citas 200 in 300ms (next.js: 23ms, application-code: 276ms)
+✓ Compiled in 691ms
+ GET /citas 200 in 1603ms (next.js: 47ms, application-code: 1556ms)
+✓ Compiled in 858ms
+[?25h

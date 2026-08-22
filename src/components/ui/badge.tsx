@@ -9,12 +9,12 @@ export type BadgeVariant =
   | "teal";
 
 const styles: Record<BadgeVariant, string> = {
-  success: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
-  warning: "bg-amber-50 text-amber-700 ring-amber-600/20",
-  danger: "bg-rose-50 text-rose-700 ring-rose-600/20",
-  info: "bg-sky-50 text-sky-700 ring-sky-600/20",
-  neutral: "bg-slate-100 text-slate-600 ring-slate-500/20",
-  teal: "bg-teal-50 text-teal-700 ring-teal-600/20",
+  success: "bg-emerald-500/15 text-emerald-100 ring-emerald-300/30",
+  warning: "bg-amber-500/15 text-amber-100 ring-amber-300/30",
+  danger: "bg-rose-500/15 text-rose-100 ring-rose-300/30",
+  info: "bg-sky-500/15 text-sky-100 ring-sky-300/30",
+  neutral: "bg-slate-700/50 text-slate-100 ring-slate-400/30",
+  teal: "bg-teal-500/15 text-teal-100 ring-teal-300/30",
 };
 
 const dots: Record<BadgeVariant, string> = {
