@@ -1,0 +1,672 @@
+openapi: 3.0.3
+info:
+  title: Sonrisa Dental — API de Citas
+  description: |
+    Especificación de la API REST para el módulo de **Citas** del sistema Sonrisa Dental.
+
+    ## Contexto
+    La app frontend es una PWA construida con Next.js. Los datos de citas se consumen desde esta API.
+    Actualmente la data está hardcodeada; esta spec define cómo deberá funcionar el backend.
+
+    ## Convenciones
+    - **IDs:** UUID v4 (`"a1b2c3d4-e5f6-7890-abcd-ef1234567890"`)
+    - **Fechas:** ISO 8601 (`"2026-08-15"`)
+    - **Horas:** Formato 24h (`"10:30"`, `"15:00"`)
+    - **Moneda:** MXN (pesos mexicanos)
+    - **Eliminación:** Lógica (soft delete) — nunca se borran registros, se marca `eliminado: true`
+    - **Relaciones:** Se referencian por ID (no por nombre de texto)
+
+    ## Estados de una cita
+    | Estado | Descripción |
+    |---|---|
+    | `pendiente` | Cita futura, aún no atendida |
+    | `completada` | Cita atendida exitosamente |
+    | `cancelada` | Cita cancelada por el paciente o el consultorio |
+    | `eliminada` | Eliminación lógica (no aparece en listados) |
+
+    ## Reglas de negocio
+    1. **No se pueden crear citas en el pasado** (fechaISO < hoy → 400)
+    2. **No puede haber conflicto de horario** — mismo doctor + misma fecha + misma hora → 409
+    3. **Las citas pasadas son solo lectura** — no se pueden editar ni cancelar
+    4. **Completar una cita** debería disparar la creación de un registro en historial clínico (side effect en el backend)
+    5. **Las horas disponibles** son en intervalos de 30 minutos (08:00, 08:30, 09:00, ...)
+  version: 1.0.0
+  contact:
+    name: Sonrisa Dental — Equipo Frontend
+    email: frontend@sonrisadental.mx
+
+servers:
+  - url: http://localhost:3000/api
+    description: Servidor local de desarrollo
+  - url: https://api.sonrisadental.mx
+    description: Servidor de producción
+
+tags:
+  - name: Citas
+    description: Operaciones CRUD sobre citas del consultorio
+  - name: Dashboard
+    description: Datos agregados para el dashboard
+
+paths:
+  /citas:
+    get:
+      tags: [Citas]
+      operationId: listarCitas
+      summary: Listar todas las citas
+      description: |
+        Retorna una lista paginada de citas con filtros opcionales.
+        Por defecto solo retorna citas **no eliminadas** (`eliminada: false`).
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+          description: Número de página
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+          description: Registros por página
+        - name: estado
+          in: query
+          schema:
+            $ref: '#/components/schemas/EstadoCita'
+          description: Filtrar por estado
+        - name: doctorId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filtrar por doctor (UUID)
+        - name: pacienteId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filtrar por paciente (UUID)
+        - name: fechaDesde
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Fecha inicio del rango (YYYY-MM-DD)
+        - name: fechaHasta
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Fecha fin del rango (YYYY-MM-DD)
+        - name: busqueda
+          in: query
+          schema:
+            type: string
+          description: |
+            Busca por nombre del paciente o nombre del doctor.
+            El backend debe normalizar (quitar tildes, lowercase) antes de comparar.
+      responses:
+        '200':
+          description: Lista de citas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cita'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+    post:
+      tags: [Citas]
+      operationId: crearCita
+      summary: Crear una nueva cita
+      description: |
+        Crea una cita nueva. El backend debe validar:
+        - Que `pacienteId` exista
+        - Que `doctorId` exista y esté disponible
+        - Que `fechaISO` no sea en el pasado
+        - Que no haya conflicto de horario (mismo doctor + fecha + hora)
+        - Que `duracion` esté en la lista permitida
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearCita'
+      responses:
+        '201':
+          description: Cita creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cita'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          description: Paciente o doctor no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de horario (el doctor ya tiene una cita en ese horario)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Error'
+                  - type: object
+                    properties:
+                      detalles:
+                        type: object
+                        properties:
+                          doctorId:
+                            type: string
+                            format: uuid
+                          fechaISO:
+                            type: string
+                            format: date
+                          hora:
+                            type: string
+                          conflictoCon:
+                            type: string
+                            description: ID de la cita que genera el conflicto
+
+  /citas/{id}:
+    parameters:
+      - $ref: '#/components/parameters/CitaId'
+
+    get:
+      tags: [Citas]
+      operationId: obtenerCita
+      summary: Obtener una cita por ID
+      responses:
+        '200':
+          description: Detalle de la cita
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cita'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Citas]
+      operationId: actualizarCita
+      summary: Actualizar una cita existente
+      description: |
+        Actualiza todos los campos de una cita. Reglas:
+        - No se pueden editar citas pasadas (fechaISO < hoy) → 400
+        - No se pueden editar citas completadas o canceladas → 400
+        - Se revalida el conflicto de horario si cambia fecha/hora/doctor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActualizarCita'
+      responses:
+        '200':
+          description: Cita actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cita'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Conflicto de horario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags: [Citas]
+      operationId: eliminarCita
+      summary: Eliminar una cita (soft delete)
+      description: |
+        **Eliminación lógica:** marca `eliminada: true` y `estado: "cancelada"`.
+        El registro NO se borra de la base de datos.
+        Las citas completadas no se pueden eliminar → 400.
+      responses:
+        '204':
+          description: Cita eliminada (soft delete)
+        '400':
+          description: No se puede eliminar una cita completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /citas/{id}/estado:
+    parameters:
+      - $ref: '#/components/parameters/CitaId'
+      - $ref: '#/components/parameters/CitaId'
+
+    patch:
+      tags: [Citas]
+      operationId: cambiarEstadoCita
+      summary: Cambiar el estado de una cita
+      description: |
+        Cambia el estado de una cita. Usado para:
+        - **Completar** una cita (pendiente → completada)
+        - **Cancelar** una cita (pendiente → cancelada)
+
+        ### Side effects al completar
+        1. Se crea un registro en la tabla de **historial clínico** (el frontend o el backend pueden disparar esto)
+        2. Se actualiza la `ultimaVisita` del paciente
+        3. Se dispara notificación push al paciente (futuro)
+
+        ### Restricciones
+        - Solo se puede cambiar el estado de citas **pendientes**
+        - Las citas pasadas no se pueden cambiar → 400
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [estado]
+              properties:
+                estado:
+                  type: string
+                  enum: [completada, cancelada]
+                  description: Nuevo estado de la cita
+      responses:
+        '200':
+          description: Estado cambiado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cita'
+        '400':
+          description: |
+            No se puede cambiar el estado (cita ya completada, cancelada, o es pasada)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /citas/{id}/mover:
+    parameters:
+      - $ref: '#/components/parameters/CitaId'
+
+    patch:
+      tags: [Citas]
+      operationId: moverCita
+      summary: Reagendar una cita (cambiar fecha y hora)
+      description: |
+        Usado por el **drag & drop** en el calendario FullCalendar.
+        Cambia la fecha y/o hora de una cita existente.
+
+        ### Validaciones
+        - No se pueden mover citas pasadas → 400
+        - No se pueden mover citas completadas o canceladas → 400
+        - Se verifica conflicto de horario con el nuevo horario → 409
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fechaISO, hora]
+              properties:
+                fechaISO:
+                  type: string
+                  format: date
+                  example: "2026-08-20"
+                  description: Nueva fecha de la cita (YYYY-MM-DD)
+                hora:
+                  type: string
+                  example: "14:30"
+                  description: Nueva hora de la cita (HH:MM, formato 24h)
+      responses:
+        '200':
+          description: Cita reagendada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cita'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Conflicto de horario en la nueva fecha/hora
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /dashboard/stats:
+    get:
+      tags: [Dashboard]
+      operationId: obtenerStats
+      summary: Estadísticas del dashboard
+      description: Retorna los datos agregados que muestra el dashboard principal.
+      responses:
+        '200':
+          description: Estadísticas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardStats'
+
+  /dashboard/proximas-citas:
+    get:
+      tags: [Dashboard]
+      operationId: proximasCitas
+      summary: Próximas citas pendientes
+      description: Retorna todas las citas con estado `pendiente`, ordenadas por fecha ascendente.
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+          description: Máximo de citas a retornar
+      responses:
+        '200':
+          description: Lista de próximas citas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cita'
+
+components:
+  parameters:
+    CitaId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: UUID de la cita
+
+  schemas:
+    # ─── Enums ───────────────────────────────────────
+    EstadoCita:
+      type: string
+      enum: [pendiente, completada, cancelada]
+      description: |
+        - `pendiente`: Cita futura, aún no atendida
+        - `completada`: Cita atendida exitosamente
+        - `cancelada`: Cita cancelada
+
+    TipoCita:
+      type: string
+      enum:
+        - Limpieza dental
+        - Consulta general
+        - Consulta de ortodoncia
+        - Endodoncia (conducto)
+        - Blanqueamiento dental
+        - Extracción de muela
+        - Revisión general
+        - Tratamiento periodontal
+      description: Tipo de servicio de la cita
+
+    DuracionCita:
+      type: integer
+      enum: [30, 45, 60, 90, 120]
+      description: Duración de la cita en minutos
+
+    # ─── Entidad principal ───────────────────────────
+    Cita:
+      type: object
+      description: Representación completa de una cita
+      required:
+        - id
+        - pacienteId
+        - doctorId
+        - fechaISO
+        - hora
+        - tipo
+        - duracion
+        - estado
+        - eliminada
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: UUID único de la cita
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        pacienteId:
+          type: string
+          format: uuid
+          description: UUID del paciente asociado
+          example: "p-uuid-paciente-001"
+        paciente:
+          type: string
+          description: Nombre completo del paciente (denormalizado para la UI)
+          example: "María Fernanda López"
+        doctorId:
+          type: string
+          format: uuid
+          description: UUID del doctor asignado
+          example: "d-uuid-doctor-001"
+        doctor:
+          type: string
+          description: Nombre completo del doctor (denormalizado para la UI)
+          example: "Dra. Elena Vargas"
+        fechaISO:
+          type: string
+          format: date
+          description: Fecha de la cita en formato ISO (YYYY-MM-DD)
+          example: "2026-08-15"
+        hora:
+          type: string
+          description: Hora de la cita en formato 24h (HH:MM)
+          example: "10:30"
+        tipo:
+          $ref: '#/components/schemas/TipoCita'
+        duracion:
+          $ref: '#/components/schemas/DuracionCita'
+        estado:
+          $ref: '#/components/schemas/EstadoCita'
+        eliminada:
+          type: boolean
+          description: Si es true, la cita fue eliminada lógicamente
+          default: false
+          example: false
+        createdAt:
+          type: string
+          format: date-time
+          description: Fecha de creación (ISO 8601)
+          example: "2026-08-10T08:30:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Última actualización (ISO 8601)
+          example: "2026-08-12T14:20:00.000Z"
+
+    # ─── Request bodies ──────────────────────────────
+    CrearCita:
+      type: object
+      description: Body para crear una nueva cita
+      required:
+        - pacienteId
+        - doctorId
+        - fechaISO
+        - hora
+        - tipo
+        - duracion
+      properties:
+        pacienteId:
+          type: string
+          format: uuid
+          description: UUID del paciente
+        doctorId:
+          type: string
+          format: uuid
+          description: UUID del doctor
+        fechaISO:
+          type: string
+          format: date
+          description: Fecha de la cita (YYYY-MM-DD). No puede ser en el pasado.
+          example: "2026-08-20"
+        hora:
+          type: string
+          description: Hora de la cita (HH:MM, formato 24h). Debe ser en intervalos de 30 min.
+          example: "14:00"
+        tipo:
+          $ref: '#/components/schemas/TipoCita'
+        duracion:
+          $ref: '#/components/schemas/DuracionCita'
+
+    ActualizarCita:
+      type: object
+      description: Body para actualizar una cita existente
+      required:
+        - pacienteId
+        - doctorId
+        - fechaISO
+        - hora
+        - tipo
+        - duracion
+      properties:
+        pacienteId:
+          type: string
+          format: uuid
+          description: UUID del paciente (puede cambiar si se reasigna)
+        doctorId:
+          type: string
+          format: uuid
+          description: UUID del doctor (puede cambiar si se reasigna)
+        fechaISO:
+          type: string
+          format: date
+          description: Nueva fecha (YYYY-MM-DD)
+        hora:
+          type: string
+          description: Nueva hora (HH:MM)
+        tipo:
+          $ref: '#/components/schemas/TipoCita'
+        duracion:
+          $ref: '#/components/schemas/DuracionCita'
+
+    # ─── Respuestas ──────────────────────────────────
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          description: Total de registros que coinciden con los filtros
+          example: 45
+        totalPages:
+          type: integer
+          example: 3
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Código del error
+          example: "HORARIO_CONFLICTO"
+        message:
+          type: string
+          description: Mensaje legible para el desarrollador
+          example: "El doctor ya tiene una cita programada a las 10:30 del 2026-08-15"
+
+    DashboardStats:
+      type: object
+      properties:
+        totalPacientes:
+          type: integer
+          description: Total de pacientes registrados
+          example: 247
+        pacientesActivos:
+          type: integer
+          description: Pacientes con visita en los últimos 3 meses
+          example: 189
+        citasHoy:
+          type: integer
+          description: Citas programadas para hoy
+          example: 8
+        citasPendientes:
+          type: integer
+          description: Total de citas pendientes (futuras)
+          example: 34
+        facturacionMes:
+          type: object
+          properties:
+            total:
+              type: number
+              format: float
+              description: Total facturado del mes en MXN
+              example: 85400.00
+            cobrado:
+              type: number
+              format: float
+              description: Monto cobrado (facturas pagadas)
+              example: 62300.00
+            pendiente:
+              type: number
+              format: float
+              description: Monto pendiente de cobro
+              example: 23100.00
+        tasaAsistencia:
+          type: number
+          format: float
+          description: Porcentaje de asistencia (0-100)
+          example: 87.5
+
+  responses:
+    BadRequest:
+      description: Solicitud inválida (validación fallida)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            fechaPasada:
+              summary: Fecha en el pasado
+              value:
+                error: "FECHA_PASADA"
+                message: "No se pueden crear citas en el pasado"
+            camposFaltantes:
+              summary: Campos requeridos faltantes
+              value:
+                error: "VALIDACION"
+                message: "Los campos pacienteId, doctorId, fechaISO, hora, tipo y duracion son obligatorios"
+
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "NOT_FOUND"
+            message: "No se encontró la cita con el ID especificado"

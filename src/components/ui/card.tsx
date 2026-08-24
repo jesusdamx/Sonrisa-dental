@@ -1,10 +1,12 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 export function Card({
   className = "",
+  style,
   children,
 }: {
   className?: string;
+  style?: CSSProperties;
   children: ReactNode;
 }) {
   return (
@@ -13,6 +15,7 @@ export function Card({
       style={{
         backgroundColor: "var(--card-bg)",
         borderColor: "var(--card-border)",
+        ...style,
       }}
     >
       {children}
@@ -53,10 +56,16 @@ export function CardHeader({
 
 export function CardContent({
   className = "",
+  style,
   children,
 }: {
   className?: string;
+  style?: CSSProperties;
   children: ReactNode;
 }) {
-  return <div className={`px-5 py-4 ${className}`}>{children}</div>;
+  return (
+    <div className={`px-5 py-4 ${className}`} style={style}>
+      {children}
+    </div>
+  );
 }

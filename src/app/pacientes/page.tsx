@@ -31,10 +31,10 @@ export default function PacientesPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>
             Pacientes
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm" style={{ color: "var(--text-secondary)" }}>
             {pacientes.length} pacientes registrados en el consultorio.
           </p>
         </div>
@@ -47,23 +47,23 @@ export default function PacientesPage() {
       <Card>
         <CardContent className="flex flex-wrap items-center justify-between gap-3 pb-4">
           <label className="relative w-full sm:max-w-xs">
-            <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" style={{ color: "var(--text-tertiary)" }} />
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Buscar por nombre, email o teléfono…"
-              className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 pr-3 pl-9 text-sm text-slate-700 placeholder:text-slate-400 focus:border-teal-500 focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
+              className="input-base h-10 w-full pl-9"
             />
           </label>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
             Mostrando {filtrados.length} de {pacientes.length}
           </p>
         </CardContent>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[720px] text-left text-sm">
+          <table className="table-mobile-cards w-full min-w-[720px] text-left text-sm">
             <thead>
-              <tr className="border-t border-slate-100 text-xs text-slate-500">
+              <tr className="border-t text-xs" style={{ borderColor: "var(--card-border)", color: "var(--text-tertiary)" }}>
                 <th className="px-5 py-3 font-medium">Paciente</th>
                 <th className="px-5 py-3 font-medium">Teléfono</th>
                 <th className="px-5 py-3 font-medium">Edad</th>
@@ -72,33 +72,33 @@ export default function PacientesPage() {
                 <th className="px-5 py-3 font-medium">Estado</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y" style={{ borderColor: "var(--card-border)" }}>
               {filtrados.map((p) => (
                 <tr key={p.id} className="hover:bg-slate-50/70">
-                  <td className="px-5 py-3">
+                  <td className="px-5 py-3" data-label="Paciente">
                     <div className="flex items-center gap-3">
                       <Avatar iniciales={p.iniciales} color={p.color} />
                       <div className="min-w-0">
-                        <p className="truncate font-medium text-slate-900">
+                        <p className="truncate font-medium" style={{ color: "var(--text-primary)" }}>
                           {p.nombre}
                         </p>
-                        <p className="truncate text-xs text-slate-500">
+                        <p className="truncate text-xs" style={{ color: "var(--text-secondary)" }}>
                           {p.email}
                         </p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-5 py-3 whitespace-nowrap text-slate-600">
+                  <td className="px-5 py-3 whitespace-nowrap" style={{ color: "var(--text-secondary)" }} data-label="Teléfono">
                     {p.telefono}
                   </td>
-                  <td className="px-5 py-3 text-slate-600">{p.edad}</td>
-                  <td className="px-5 py-3 whitespace-nowrap text-slate-600">
+                  <td className="px-5 py-3" style={{ color: "var(--text-secondary)" }} data-label="Edad">{p.edad}</td>
+                  <td className="px-5 py-3 whitespace-nowrap" style={{ color: "var(--text-secondary)" }} data-label="Última visita">
                     {p.ultimaVisita}
                   </td>
-                  <td className="px-5 py-3 whitespace-nowrap text-slate-600">
+                  <td className="px-5 py-3 whitespace-nowrap" style={{ color: "var(--text-secondary)" }} data-label="Próxima cita">
                     {p.proximaCita}
                   </td>
-                  <td className="px-5 py-3">
+                  <td className="px-5 py-3" data-label="Estado">
                     <Badge variant={estadoBadge[p.estado].variant} dot>
                       {estadoBadge[p.estado].label}
                     </Badge>
@@ -109,7 +109,8 @@ export default function PacientesPage() {
                 <tr>
                   <td
                     colSpan={6}
-                    className="px-5 py-10 text-center text-sm text-slate-400"
+                    className="px-5 py-10 text-center text-sm"
+                    style={{ color: "var(--text-tertiary)" }}
                   >
                     No se encontraron pacientes con «{query}».
                   </td>

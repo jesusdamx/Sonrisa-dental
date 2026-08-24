@@ -313,3 +313,113 @@ html.dark .fc .fc-event {
 .fc-cita-editable {
   cursor: pointer;
 }
+
+/* ===== Safe areas para notch y barra inferior (iOS/Android) ===== */
+body {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Header se adapta al notch */
+header {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Sidebar evita el notch */
+aside {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Tab bar inferior respeta la barra del sistema */
+nav {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Touch targets mínimos de 44x44px para mobile */
+@media (pointer: coarse) {
+  button,
+  a,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Smooth scroll para mobile */
+html {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Evitar pull-to-refresh en mobile */
+body {
+  overscroll-behavior-y: contain;
+}
+
+/* ===== Tablas responsive en móvil ===== */
+/* Las tablas se vuelven scroll horizontal en móvil */
+@media (max-width: 767px) {
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+  }
+  .overflow-x-auto::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+
+  /* Indicador visual de que hay más contenido */
+  .overflow-x-auto table {
+    min-width: 600px;
+  }
+}
+
+/* Cards flotantes en móvil para filas de tabla (opcionales) */
+@media (max-width: 767px) {
+  .table-mobile-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .table-mobile-cards tbody,
+  .table-mobile-cards thead {
+    display: contents;
+  }
+
+  .table-mobile-cards tr {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--card-border);
+    background-color: var(--card-bg);
+    padding: 0.75rem 1rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  .table-mobile-cards tr:hover {
+    background-color: var(--hover-bg);
+  }
+
+  .table-mobile-cards th {
+    display: none;
+  }
+
+  .table-mobile-cards td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem 0;
+    border: none;
+  }
+
+  .table-mobile-cards td::before {
+    content: attr(data-label);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}

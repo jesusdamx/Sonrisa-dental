@@ -77,10 +77,10 @@ function StatCard({
           {delta}
         </span>
       </div>
-      <p className="mt-4 text-2xl font-bold tracking-tight text-slate-900">
+      <p className="mt-4 text-2xl font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>
         {value}
       </p>
-      <p className="mt-0.5 text-sm text-slate-500">{label}</p>
+      <p className="mt-0.5 text-sm" style={{ color: "var(--text-secondary)" }}>{label}</p>
     </Card>
   );
 }
@@ -185,7 +185,7 @@ export default function DashboardPage() {
           />
           <CardContent className="px-0 pt-0">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[560px] text-left text-sm">
+              <table className="table-mobile-cards w-full min-w-[560px] text-left text-sm">
                 <thead>
                   <tr style={{ color: "var(--text-secondary)" }}>
                     <th className="px-5 py-3 font-medium" style={{ color: "var(--text-secondary)" }}>Paciente</th>
@@ -198,15 +198,15 @@ export default function DashboardPage() {
                 <tbody className="divide-y" style={{ borderColor: "var(--card-border)" }}>
                   {proximas.map((cita) => (
                     <tr key={cita.id}>
-                      <td className="px-5 py-3 font-medium" style={{ color: "var(--text-primary)" }}>
+                      <td className="px-5 py-3 font-medium" style={{ color: "var(--text-primary)" }} data-label="Paciente">
                         {cita.paciente}
                       </td>
-                      <td className="px-5 py-3" style={{ color: "var(--text-secondary)" }}>{cita.doctor}</td>
-                      <td className="px-5 py-3 whitespace-nowrap" style={{ color: "var(--text-secondary)" }}>
+                      <td className="px-5 py-3" style={{ color: "var(--text-secondary)" }} data-label="Doctor">{cita.doctor}</td>
+                      <td className="px-5 py-3 whitespace-nowrap" style={{ color: "var(--text-secondary)" }} data-label="Fecha">
                         {cita.fecha} · {cita.hora}
                       </td>
-                      <td className="px-5 py-3" style={{ color: "var(--text-secondary)" }}>{cita.tipo}</td>
-                      <td className="px-5 py-3">
+                      <td className="px-5 py-3" style={{ color: "var(--text-secondary)" }} data-label="Tipo">{cita.tipo}</td>
+                      <td className="px-5 py-3" data-label="Estado">
                         <Badge
                           variant={estadoCita[cita.estado].variant}
                           dot

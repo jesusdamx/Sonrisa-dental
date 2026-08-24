@@ -3,9 +3,30 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Bell, Menu, Moon, Search, Stethoscope, Sun, X } from "lucide-react";
+import {
+  Bell,
+  CalendarDays,
+  FileText,
+  LayoutDashboard,
+  Menu,
+  Moon,
+  MoreHorizontal,
+  Search,
+  Stethoscope,
+  Sun,
+  Users,
+  X,
+} from "lucide-react";
 import { NAV_ITEMS } from "@/lib/nav";
 import { useTheme } from "@/context/theme-context";
+
+/** Items visibles en la tab bar móvil (los más usados). */
+const MOBILE_TAB_ITEMS = [
+  { href: "/", label: "Inicio", icon: LayoutDashboard },
+  { href: "/pacientes", label: "Pacientes", icon: Users },
+  { href: "/citas", label: "Citas", icon: CalendarDays },
+  { href: "/historial-clinico", label: "Historial", icon: FileText },
+];
 
 function Brand() {
   return (
@@ -86,6 +107,56 @@ function SidebarBody() {
   );
 }
 
+/** Tab bar inferior para móvil — solo los 4 módulos principales. */
+function MobileTabBar({ pathname }: { pathname: string }) {
+  return (
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-30 flex items-stretch border-t md:hidden"
+      style={{
+        backgroundColor: "var(--card-bg)",
+        borderColor: "var(--card-border)",
+        paddingBottom: "env(safe-area-inset-bottom, 0px)",
+      }}
+    >
+      {MOBILE_TAB_ITEMS.map((item) => {
+        const active =
+          item.href === "/"
+            ? pathname === "/"
+            : pathname.startsWith(item.href);
+        const Icon = item.icon;
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            aria-current={active ? "page" : undefined}
+            className="flex flex-1 flex-col items-center gap-1 py-2 text-[10px] font-medium transition-colors"
+            style={{
+              color: active ? "#14b8a6" : "var(--text-tertiary)",
+            }}
+          >
+            <Icon className="h-5 w-5" />
+            <span>{item.label}</span>
+          </Link>
+        );
+      })}
+      {/* Botón "Más" que abre el drawer del sidebar */}
+      <Link
+        href="#"
+        onClick={(e) => {
+          e.preventDefault();
+          // Dispara un evento custom que el Shell escucha
+          window.dispatchEvent(new CustomEvent("open-mobile-menu"));
+        }}
+        className="flex flex-1 flex-col items-center gap-1 py-2 text-[10px] font-medium transition-colors"
+        style={{ color: "var(--text-tertiary)" }}
+      >
+        <MoreHorizontal className="h-5 w-5" />
+        <span>Más</span>
+      </Link>
+    </nav>
+  );
+}
+
 export default function Shell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -95,6 +166,13 @@ export default function Shell({ children }: { children: ReactNode }) {
   // Asegurar que el componente está montado antes de renderizar tema
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // Escucha el evento del tab bar "Más" para abrir el drawer
+  useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener("open-mobile-menu", handler);
+    return () => window.removeEventListener("open-mobile-menu", handler);
   }, []);
 
   // Cierra el menú automáticamente al cambiar de ruta
@@ -226,8 +304,17 @@ export default function Shell({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <main className="px-4 py-6 md:px-8 md:py-8" style={{ backgroundColor: "var(--background)", color: "var(--text-primary)" }}>{children}</main>
+        {/* Main content — padding bottom extra en móvil para la tab bar */}
+        <main
+          className="px-4 py-6 pb-24 md:px-8 md:py-8 md:pb-8"
+          style={{ backgroundColor: "var(--background)", color: "var(--text-primary)" }}
+        >
+          {children}
+        </main>
       </div>
+
+      {/* Tab bar inferior — solo en móvil */}
+      <MobileTabBar pathname={pathname} />
     </div>
   );
 }

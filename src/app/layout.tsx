@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import Shell from "@/components/dashboard/shell";
 import { ThemeProvider } from "@/context/theme-context";
+import PWARegister from "@/components/pwa-register";
 
 // CSS global de FullCalendar (v7). Debe importarse antes que los estilos de app
 // para que nuestras sobreescrituras dark mode tengan prioridad.
@@ -21,6 +22,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
+  themeColor: "#1e293b",
+};
+
 export const metadata: Metadata = {
   title: {
     default: "Sonrisa Dental · Dashboard",
@@ -28,6 +37,15 @@ export const metadata: Metadata = {
   },
   description:
     "Panel de administración del consultorio dental: pacientes, citas, facturación e historial clínico.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Sonrisa Dental",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -36,7 +54,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       lang="es"
       className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
+      <head>
+        <link rel="apple-touch-icon" href="/icon-192.png" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="msapplication-TileColor" content="#1e293b" />
+      </head>
       <body className="font-sans">
+        <PWARegister />
         <ThemeProvider>
           <Shell>{children}</Shell>
         </ThemeProvider>
